@@ -1,7 +1,6 @@
 package daw2a.gestionalimentos.controllers;
 import daw2a.gestionalimentos.entities.Almacen;
 import daw2a.gestionalimentos.repositories.AlmacenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -14,8 +13,11 @@ import java.util.Optional;
 @RequestMapping("/api/almaenes")
 public class AlmacenController {
 
-    @Autowired
-    private AlmacenRepository almacenRepository;
+    private final AlmacenRepository almacenRepository;
+
+    public AlmacenController(AlmacenRepository almacenRepository) {
+        this.almacenRepository = almacenRepository;
+    }
 
     // Obtener todos los almacenes con paginación
     @GetMapping

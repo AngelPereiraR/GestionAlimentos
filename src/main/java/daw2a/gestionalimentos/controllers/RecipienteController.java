@@ -1,7 +1,6 @@
 package daw2a.gestionalimentos.controllers;
 import daw2a.gestionalimentos.entities.Recipiente;
 import daw2a.gestionalimentos.services.RecipienteService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @RequestMapping("/api/recipientes")
 public class RecipienteController {
 
-    @Autowired
-    private RecipienteService recipienteService;
+    private final RecipienteService recipienteService;
+
+    public RecipienteController(RecipienteService recipienteService) {
+        this.recipienteService = recipienteService;
+    }
 
     // Obtener todos los recipientes
     @GetMapping

@@ -2,7 +2,6 @@ package daw2a.gestionalimentos.services;
 import daw2a.gestionalimentos.entities.Alimento;
 import daw2a.gestionalimentos.enums.EstadoSelect;
 import daw2a.gestionalimentos.repositories.AlimentoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,11 @@ import java.util.Optional;
 @Service
 public class AlimentoService {
 
-    @Autowired
-    private AlimentoRepository alimentoRepository;
+    private final AlimentoRepository alimentoRepository;
+
+    public AlimentoService(AlimentoRepository alimentoRepository) {
+        this.alimentoRepository = alimentoRepository;
+    }
 
     // Obtener todos los alimentos con paginación
     public Page<Alimento> obtenerAlimentos(int page, int size) {
@@ -52,18 +54,21 @@ public class AlimentoService {
     }
 
     // Verificar y mover alimentos próximos a caducar al congelador
-    public List<Alimento> moverAlimentosACongelador(LocalDate fechaLimite) {
-        List<Alimento> alimentosProximosACaducar = alimentoRepository.findByFechaCaducidadBeforeAndCongeladoFalse(fechaLimite);
-        for (Alimento alimento : alimentosProximosACaducar) {
-            alimento.setEstado(EstadoSelect.CONGELADO);
-            alimentoRepository.save(alimento); // Se marca como congelado
-        }
-        return alimentosProximosACaducar;
+    public List<Alimento> moverAlimentosACongelador(LocalDate fechaLimite, EstadoSelect estado) {
+        // Lógica para mover los alimentos basándose en la fecha y el estado
+        List<Alimento> alimentos = alimentoRepository.findByFechaCaducidadBeforeAndEstado(fechaLimite, estado);
+
+        // Actualizar el estado de los alimentos
+        alimentos.forEach(alimento -> alimento.setEstado(EstadoSelect.CONGELADO));
+
+        // Guardar los cambios
+        return alimentoRepository.saveAll(alimentos);
     }
+
 
     // Rotación de productos (FIFO)
     public void rotarProductos() {
-        List<Alimento> alimentos = alimentoRepository.findAllByOrderByFechaEntradaAsc(); // Asumimos que los alimentos tienen un campo `fechaEntrada`
+        List<Alimento> alimentos = alimentoRepository.findAllByOrderByFechaCaducidadAsc();
         for (Alimento alimento : alimentos) {
             if (alimento.getFechaCaducidad().isBefore(LocalDate.now())) {
                 alimentoRepository.delete(alimento); // Eliminar los alimentos caducados

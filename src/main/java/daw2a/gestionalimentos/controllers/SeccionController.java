@@ -1,7 +1,6 @@
 package daw2a.gestionalimentos.controllers;
 import daw2a.gestionalimentos.entities.Seccion;
 import daw2a.gestionalimentos.services.SeccionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @RequestMapping("/api/secciones")
 public class SeccionController {
 
-    @Autowired
-    private SeccionService seccionService;
+    private final SeccionService seccionService;
+
+    public SeccionController(SeccionService seccionService) {
+        this.seccionService = seccionService;
+    }
 
     // Obtener todas las secciones
     @GetMapping

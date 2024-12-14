@@ -1,7 +1,6 @@
 package daw2a.gestionalimentos.services;
 import daw2a.gestionalimentos.entities.Almacen;
 import daw2a.gestionalimentos.repositories.AlmacenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @Service
 public class AlmacenService {
 
-    @Autowired
-    private AlmacenRepository almacenRepository;
+    private final AlmacenRepository almacenRepository;
+
+    public AlmacenService(AlmacenRepository almacenRepository) {
+        this.almacenRepository = almacenRepository;
+    }
 
     // Obtener todos los almacenes con paginación
     public Page<Almacen> obtenerAlmacenes(int page, int size) {

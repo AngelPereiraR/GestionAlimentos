@@ -1,7 +1,6 @@
 package daw2a.gestionalimentos.services;
 import daw2a.gestionalimentos.entities.Seccion;
 import daw2a.gestionalimentos.repositories.SeccionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @Service
 public class SeccionService {
 
-    @Autowired
-    private SeccionRepository seccionRepository;
+    private final SeccionRepository seccionRepository;
+
+    public SeccionService(SeccionRepository seccionRepository) {
+        this.seccionRepository = seccionRepository;
+    }
 
     // Obtener todas las secciones con paginación
     public Page<Seccion> obtenerSecciones(int page, int size) {
@@ -46,11 +48,6 @@ public class SeccionService {
             return true;
         }
         return false;
-    }
-
-    // Función adicional: Obtener las secciones por tipo
-    public Page<Seccion> obtenerSeccionesPorTipo(String tipo, int page, int size) {
-        return seccionRepository.findByTipo(tipo, PageRequest.of(page, size));
     }
 
     // Función adicional: Obtener las secciones relacionadas con un almacén

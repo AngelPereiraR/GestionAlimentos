@@ -1,11 +1,10 @@
 package daw2a.gestionalimentos.controllers;
+import daw2a.gestionalimentos.dtos.MoverAlimentosRequest;
 import daw2a.gestionalimentos.entities.Alimento;
 import daw2a.gestionalimentos.services.AlimentoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,8 +13,11 @@ import java.util.List;
 @RequestMapping("/api/alimentos")
 public class AlimentoController {
 
-    @Autowired
-    private AlimentoService alimentoService;
+    private final AlimentoService alimentoService;
+
+    public AlimentoController(AlimentoService alimentoService) {
+        this.alimentoService = alimentoService;
+    }
 
     // Obtener alimentos con paginación
     @GetMapping
@@ -69,10 +71,11 @@ public class AlimentoController {
 
     // Mover alimentos al congelador
     @PostMapping("/mover-a-congelador")
-    public ResponseEntity<List<Alimento>> moverAlimentosACongelador(@RequestBody LocalDate fechaLimite) {
-        List<Alimento> alimentosMovidos = alimentoService.moverAlimentosACongelador(fechaLimite);
+    public ResponseEntity<List<Alimento>> moverAlimentosACongelador(@RequestBody MoverAlimentosRequest request) {
+        List<Alimento> alimentosMovidos = alimentoService.moverAlimentosACongelador(request.getFechaLimite(), request.getEstado());
         return ResponseEntity.ok(alimentosMovidos);
     }
+
 
     // Rotar los productos
     @PostMapping("/rotar-productos")

@@ -1,7 +1,6 @@
 package daw2a.gestionalimentos.services;
 import daw2a.gestionalimentos.entities.Recipiente;
 import daw2a.gestionalimentos.repositories.RecipienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @Service
 public class RecipienteService {
 
-    @Autowired
-    private RecipienteRepository recipienteRepository;
+    private final RecipienteRepository recipienteRepository;
+
+    public RecipienteService(RecipienteRepository recipienteRepository) {
+        this.recipienteRepository = recipienteRepository;
+    }
 
     // Obtener todos los recipientes con paginación
     public Page<Recipiente> obtenerRecipientes(int page, int size) {
@@ -46,11 +48,6 @@ public class RecipienteService {
             return true;
         }
         return false;
-    }
-
-    // Función adicional: Obtener los recipientes por tipo (puedes usar otros criterios)
-    public Page<Recipiente> obtenerRecipientesPorTipo(String tipo, int page, int size) {
-        return recipienteRepository.findByTipo(tipo, PageRequest.of(page, size));
     }
 
     // Función adicional: Comprobar espacio disponible en un recipiente (según volumen, peso, etc.)
