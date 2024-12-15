@@ -17,13 +17,15 @@ public interface AlimentoRepository extends JpaRepository<Alimento, Long> {
     List<Alimento> findAllByOrderByFechaCaducidadAsc();
 
     @Query("SELECT a FROM Alimento a ORDER BY a.numeroDeUsos DESC")
-    List<Alimento> findTopNByOrderByNumeroDeUsosDesc(@Param("topN") int topN);
+    List<Alimento> findTopNByOrderByNumeroDeUsosDesc();
+
 
     List<Alimento> findByFechaCaducidadBefore(LocalDate fechaAviso);
 
     @Query("SELECT a.recipiente.id, COUNT(a) FROM Alimento a GROUP BY a.recipiente.id")
     List<Object[]> countByUbicacion();
 
-    @Query("SELECT a.recipiente.id, a FROM Alimento a WHERE a.fechaCaducidad < :fecha GROUP BY a.recipiente.id")
-    List<Object[]> findProximosACaducarAgrupadosPorUbicacion(@Param("fecha") LocalDate fecha);
+    @Query("SELECT a.recipiente.id, a FROM Alimento a WHERE a.fechaCaducidad < :fecha GROUP BY a.recipiente.id, a.id, a.abierto, a.categoria, a.estado, a.fechaCaducidad, a.nombre, a.numeroDeUsos, a.perecedero, a.seccion.id, a.tamano")
+    List<Object[]> findProximosACaducarAgrupadosPorRecipiente(@Param("fecha") LocalDate fecha);
+
 }

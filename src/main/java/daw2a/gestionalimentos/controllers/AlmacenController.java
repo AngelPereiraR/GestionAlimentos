@@ -1,8 +1,12 @@
 package daw2a.gestionalimentos.controllers;
 
+import daw2a.gestionalimentos.dtos.AlimentoDTO;
 import daw2a.gestionalimentos.dtos.AlmacenDTO;
+import daw2a.gestionalimentos.dtos.RecipienteDTO;
 import daw2a.gestionalimentos.dtos.SeccionDTO;
+import daw2a.gestionalimentos.entities.Alimento;
 import daw2a.gestionalimentos.entities.Almacen;
+import daw2a.gestionalimentos.entities.Recipiente;
 import daw2a.gestionalimentos.entities.Seccion;
 import daw2a.gestionalimentos.repositories.AlmacenRepository;
 import org.springframework.data.domain.Page;
@@ -40,6 +44,32 @@ public class AlmacenController {
         SeccionDTO dto = new SeccionDTO();
         dto.setId(seccion.getId());
         dto.setNombre(seccion.getNombre());
+        dto.setIdAlmacen(seccion.getId());
+        dto.setLimite(seccion.getLimite());
+        dto.setAccesibilidad(seccion.getAccesibilidad());
+        dto.setListaRecipientes(seccion.getListaRecipientes() != null ? seccion.getListaRecipientes().stream().map(this::toDTO).collect(Collectors.toList()) : null);
+        return dto;
+    }
+    private RecipienteDTO toDTO(Recipiente recipiente) {
+        RecipienteDTO dto = new RecipienteDTO();
+        dto.setId(recipiente.getId());
+        dto.setTamanyo(recipiente.getTamanyo());
+        dto.setIdSeccion(recipiente.getSeccion() != null ? recipiente.getSeccion().getId() : null);
+        dto.setListAlimentos(recipiente.getListAlimentos() != null
+                ? recipiente.getListAlimentos().stream().map(this::toDTO).collect(Collectors.toList())
+                : null);
+        return dto;
+    }
+    private AlimentoDTO toDTO(Alimento alimento) {
+        AlimentoDTO dto = new AlimentoDTO();
+        dto.setId(alimento.getId());
+        dto.setNombre(alimento.getNombre());
+        dto.setPerecedero(alimento.getPerecedero());
+        dto.setAbierto(alimento.getAbierto());
+        dto.setTamano(alimento.getTamano());
+        dto.setFechaCaducidad(alimento.getFechaCaducidad());
+        dto.setCategoria(alimento.getCategoria().toString());
+        dto.setEstado(alimento.getEstado().toString());
         return dto;
     }
 

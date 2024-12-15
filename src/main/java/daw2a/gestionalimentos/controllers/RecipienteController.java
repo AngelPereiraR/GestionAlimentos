@@ -4,11 +4,16 @@ import daw2a.gestionalimentos.dtos.RecipienteDTO;
 import daw2a.gestionalimentos.dtos.AlimentoDTO;
 import daw2a.gestionalimentos.entities.Recipiente;
 import daw2a.gestionalimentos.entities.Alimento;
+import daw2a.gestionalimentos.entities.Seccion;
+import daw2a.gestionalimentos.enums.CategoriaSelect;
+import daw2a.gestionalimentos.enums.EstadoSelect;
 import daw2a.gestionalimentos.services.RecipienteService;
+import daw2a.gestionalimentos.services.SeccionService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,9 +22,11 @@ import java.util.stream.Collectors;
 public class RecipienteController {
 
     private final RecipienteService recipienteService;
+    private final SeccionService seccionService;
 
-    public RecipienteController(RecipienteService recipienteService) {
+    public RecipienteController(RecipienteService recipienteService, SeccionService seccionService) {
         this.recipienteService = recipienteService;
+        this.seccionService = seccionService;
     }
 
     // Convertir entidad a DTO
@@ -42,8 +49,8 @@ public class RecipienteController {
         dto.setAbierto(alimento.getAbierto());
         dto.setTamano(alimento.getTamano());
         dto.setFechaCaducidad(alimento.getFechaCaducidad());
-        dto.setCategoria(String.valueOf(alimento.getCategoria()));
-        dto.setEstado(String.valueOf(alimento.getEstado()));
+        dto.setCategoria(alimento.getCategoria().toString());
+        dto.setEstado(alimento.getEstado().toString());
         return dto;
     }
 
@@ -52,10 +59,42 @@ public class RecipienteController {
         Recipiente recipiente = new Recipiente();
         recipiente.setId(dto.getId());
         recipiente.setTamanyo(dto.getTamanyo());
-        // La asignación de la sección y los alimentos dependerá de las relaciones específicas
-        // Esto puede requerir obtener las entidades relacionadas desde los servicios o repositorios.
+
+        // Asignar la sección (puedes obtenerla desde un servicio si es necesario)
+        if (dto.getIdSeccion() != null) {
+            // Obtén la entidad Seccion mediante su id
+            Optional<Seccion> seccion = seccionService.obtenerSeccionPorId(dto.getIdSeccion());
+            Seccion newSeccion = new Seccion();
+            newSeccion.setId(seccion.get().getId());
+            newSeccion.setNombre(seccion.get().getNombre());
+            newSeccion.setAccesibilidad(seccion.get().getAccesibilidad());
+            newSeccion.setLimite(seccion.get().getLimite());
+            newSeccion.setAlmacen(seccion.get().getAlmacen());
+            newSeccion.setListaRecipientes(seccion.get().getListaRecipientes());
+            recipiente.setSeccion(newSeccion);
+        }
+
+        // Asignar los alimentos
+        if (dto.getListAlimentos() != null) {
+            List<Alimento> alimentos = dto.getListAlimentos().stream().map(alimentoDTO -> {
+                Alimento alimento = new Alimento();
+                alimento.setId(alimentoDTO.getId());
+                alimento.setNombre(alimentoDTO.getNombre());
+                alimento.setPerecedero(alimentoDTO.getPerecedero());
+                alimento.setAbierto(alimentoDTO.getAbierto());
+                alimento.setTamano(alimentoDTO.getTamano());
+                alimento.setFechaCaducidad(alimentoDTO.getFechaCaducidad());
+                alimento.setCategoria(CategoriaSelect.valueOf(alimentoDTO.getCategoria()));
+                alimento.setEstado(EstadoSelect.valueOf(alimentoDTO.getEstado()));
+                return alimento;
+            }).collect(Collectors.toList());
+
+            recipiente.setListAlimentos(alimentos);
+        }
+
         return recipiente;
     }
+
 
     // Obtener todos los recipientes
     @GetMapping

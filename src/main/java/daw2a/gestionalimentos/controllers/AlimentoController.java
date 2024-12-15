@@ -2,6 +2,8 @@ package daw2a.gestionalimentos.controllers;
 
 import daw2a.gestionalimentos.dtos.AlimentoDTO;
 import daw2a.gestionalimentos.entities.Alimento;
+import daw2a.gestionalimentos.enums.CategoriaSelect;
+import daw2a.gestionalimentos.enums.EstadoSelect;
 import daw2a.gestionalimentos.services.AlimentoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +46,8 @@ public class AlimentoController {
         alimento.setAbierto(dto.getAbierto());
         alimento.setTamano(dto.getTamano());
         alimento.setFechaCaducidad(dto.getFechaCaducidad());
+        alimento.setCategoria(CategoriaSelect.valueOf(dto.getCategoria()));
+        alimento.setEstado(EstadoSelect.valueOf(dto.getEstado()));
         return alimento;
     }
 
@@ -60,20 +64,20 @@ public class AlimentoController {
 
     // Obtener disponibilidad por ubicación
     @GetMapping("/disponibilidad")
-    public ResponseEntity<Map<String, Long>> obtenerDisponibilidadPorUbicacion() {
-        Map<String, Long> disponibilidad = alimentoService.obtenerDisponibilidadPorUbicacion();
+    public ResponseEntity<Map<Long, Long>> obtenerDisponibilidadPorUbicacion() {
+        Map<Long, Long> disponibilidad = alimentoService.obtenerDisponibilidadPorUbicacion();
         return ResponseEntity.ok(disponibilidad);
     }
 
     // Obtener alimentos próximos a caducar por ubicación
     @GetMapping("/proximos-caducar")
-    public ResponseEntity<Map<String, List<AlimentoDTO>>> obtenerProximosACaducarPorUbicacion(
+    public ResponseEntity<Map<Long, List<AlimentoDTO>>> obtenerProximosACaducarPorUbicacion(
             @RequestParam(defaultValue = "7") int diasAviso) {
         LocalDate fechaAviso = LocalDate.now().plusDays(diasAviso);
-        Map<String, List<Alimento>> proximosACaducar = alimentoService.obtenerProximosACaducarPorUbicacion(fechaAviso);
+        Map<Long, List<Alimento>> proximosACaducar = alimentoService.obtenerProximosACaducarPorUbicacion(fechaAviso);
 
         // Convertir entidades a DTOs
-        Map<String, List<AlimentoDTO>> proximosACaducarDTO = proximosACaducar.entrySet().stream()
+        Map<Long, List<AlimentoDTO>> proximosACaducarDTO = proximosACaducar.entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> entry.getValue().stream().map(this::toDTO).collect(Collectors.toList())

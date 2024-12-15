@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,24 +85,35 @@ public class AlimentoService {
 
     // Controlar los alimentos más usados
     public List<Alimento> controlarAlimentosMasUsados(int topN) {
-        return alimentoRepository.findTopNByOrderByNumeroDeUsosDesc(topN);
+        List<Alimento> alimentos = alimentoRepository.findTopNByOrderByNumeroDeUsosDesc();
+        return alimentos.stream().limit(topN).collect(Collectors.toList());
     }
 
     // Cantidad total y disponibilidad por ubicación
-    public Map<String, Long> obtenerDisponibilidadPorUbicacion() {
+    public Map<Long, Long> obtenerDisponibilidadPorUbicacion() {
         return alimentoRepository.countByUbicacion().stream()
                 .collect(Collectors.toMap(
-                        resultado -> (String) resultado[0],
+                        resultado -> (Long) resultado[0],
                         resultado -> (Long) resultado[1]
                 ));
     }
 
     // Resumen de alimentos próximos a caducar agrupados por ubicación
-    public Map<String, List<Alimento>> obtenerProximosACaducarPorUbicacion(LocalDate fecha) {
-        return alimentoRepository.findProximosACaducarAgrupadosPorUbicacion(fecha).stream()
-                .collect(Collectors.toMap(
-                        resultado -> (String) resultado[0],
-                        resultado -> (List<Alimento>) resultado[1]
-                ));
+    public Map<Long, List<Alimento>> obtenerProximosACaducarPorUbicacion(LocalDate fechaAviso) {
+        List<Object[]> resultado = alimentoRepository.findProximosACaducarAgrupadosPorRecipiente(fechaAviso);
+
+        Map<Long, List<Alimento>> alimentosPorRecipiente = new HashMap<>();
+
+        for (Object[] fila : resultado) {
+            Long recipienteId = (Long) fila[0]; // El primer valor de cada fila es el ID del recipiente
+            Alimento alimento = (Alimento) fila[1]; // El segundo valor es el objeto Alimento
+
+            alimentosPorRecipiente
+                    .computeIfAbsent(recipienteId, k -> new ArrayList<>())
+                    .add(alimento);
+        }
+
+        return alimentosPorRecipiente;
     }
+
 }

@@ -1,0 +1,593 @@
+{
+	"info": {
+		"_postman_id": "eca33940-13a3-4e82-9add-748295e96af4",
+		"name": "GestionAlimentos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23906980"
+	},
+	"item": [
+		{
+			"name": "Alimentos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos Disponibilidad",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos/disponibilidad",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos",
+						"disponibilidad"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos Proximos Caducar",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos/proximos-caducar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos",
+						"proximos-caducar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos Mas Usados",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos/mas-usados?topN=6",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos",
+						"mas-usados"
+					],
+					"query": [
+						{
+							"key": "topN",
+							"value": "6"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Arroz\",\r\n  \"perecedero\": false,\r\n  \"abierto\": false,\r\n  \"tamano\": 1000,\r\n  \"fechaCaducidad\": \"2025-12-31\",\r\n  \"categoria\": \"CONSERVAS\",\r\n  \"estado\": \"NUEVO\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos Id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"nombre\": \"Arroz Integral\",\r\n  \"perecedero\": false,\r\n  \"abierto\": false,\r\n  \"tamano\": 1000,\r\n  \"fechaCaducidad\": \"2025-12-31\",\r\n  \"categoria\": \"CONSERVAS\",\r\n  \"estado\": \"NUEVO\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Alimentos Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/alimentos/10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"alimentos",
+						"10"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Almacenes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/almacenes?page=0&size=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"almacenes"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Almacenes Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/almacenes/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"almacenes",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Almacenes",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Almacén Central\",\r\n  \"temp\": 5,\r\n  \"listSeccion\": [\r\n    {\r\n      \"nombre\": \"Sección A\",\r\n      \"limite\": 100,\r\n      \"accesibilidad\": 1\r\n    },\r\n    {\r\n      \"nombre\": \"Sección B\",\r\n      \"limite\": 200,\r\n      \"accesibilidad\": 2\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/almacenes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"almacenes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Almacenes Id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Almacén Modificado\",\r\n  \"temp\": 6,\r\n  \"listSeccion\": [\r\n    {\r\n      \"id\": 1,\r\n      \"nombre\": \"Sección A\",\r\n      \"limite\": 120,\r\n      \"accesibilidad\": 1\r\n    },\r\n    {\r\n      \"id\": 2,\r\n      \"nombre\": \"Sección C\",\r\n      \"limite\": 150,\r\n      \"accesibilidad\": 3\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/almacenes/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"almacenes",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Almacenes Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/almacenes/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"almacenes",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recipientes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/recipientes?page=0&pageSize=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"recipientes"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recipientes Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/recipientes/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"recipientes",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recipientes",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"tamanyo\": 50,\r\n  \"idSeccion\": 1,\r\n  \"listAlimentos\": [\r\n    {\r\n      \"id\": 1,\r\n      \"nombre\": \"Alimento1\",\r\n      \"perecedero\": true,\r\n      \"abierto\": false,\r\n      \"tamano\": 10,\r\n      \"fechaCaducidad\": \"2025-12-31\",\r\n      \"categoria\": \"CONSERVAS\",\r\n      \"estado\": \"CADUCADO\"\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/recipientes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"recipientes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recipientes Id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"tamanyo\": 75,\r\n  \"idSeccion\": 2,\r\n  \"listAlimentos\": [\r\n    {\r\n      \"id\": 1,\r\n      \"nombre\": \"Alimento2\",\r\n      \"perecedero\": false,\r\n      \"abierto\": true,\r\n      \"tamano\": 20,\r\n      \"fechaCaducidad\": \"2024-01-15\",\r\n      \"categoria\": \"CARNE_PESCADO\",\r\n      \"estado\": \"CADUCADO\"\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/recipientes/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"recipientes",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Recipientes Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/recipientes/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"recipientes",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Secciones",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/secciones?page=0&pageSize=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"secciones"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Secciones Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/secciones/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"secciones",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Secciones",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"nombre\": \"Sección A\",\r\n  \"accesibilidad\": 1,\r\n  \"limite\": 100,\r\n  \"idAlmacen\": 1,\r\n  \"listaRecipientes\": []\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/secciones",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"secciones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Secciones Id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 1,\r\n  \"nombre\": \"Sección Actualizada\",\r\n  \"accesibilidad\": 2,\r\n  \"limite\": 150,\r\n  \"idAlmacen\": 1,\r\n  \"listaRecipientes\": []\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/secciones/12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"secciones",
+						"12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Secciones Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/secciones/12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"secciones",
+						"12"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

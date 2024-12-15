@@ -20,7 +20,7 @@ public class Almacen {
     private String nombre;
     private String temp;
 
-    @OneToMany(mappedBy = "almacen")
+    @OneToMany(mappedBy = "almacen", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Seccion> listSeccion;
 
