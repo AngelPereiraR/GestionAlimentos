@@ -1,15 +1,14 @@
 package daw2a.gestionalimentos.controllers;
 
 import daw2a.gestionalimentos.dtos.AlimentoDTO;
-import daw2a.gestionalimentos.enums.CategoriaSelect;
-import daw2a.gestionalimentos.enums.EstadoSelect;
-import daw2a.gestionalimentos.services.AlimentoService;
 import daw2a.gestionalimentos.entities.Alimento;
+import daw2a.gestionalimentos.services.AlimentoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,8 +30,8 @@ public class AlimentoController {
         dto.setAbierto(alimento.getAbierto());
         dto.setTamano(alimento.getTamano());
         dto.setFechaCaducidad(alimento.getFechaCaducidad());
-        dto.setCategoria(String.valueOf(alimento.getCategoria()));
-        dto.setEstado(String.valueOf(alimento.getEstado()));
+        dto.setCategoria(alimento.getCategoria().toString());
+        dto.setEstado(alimento.getEstado().toString());
         return dto;
     }
 
@@ -45,27 +44,60 @@ public class AlimentoController {
         alimento.setAbierto(dto.getAbierto());
         alimento.setTamano(dto.getTamano());
         alimento.setFechaCaducidad(dto.getFechaCaducidad());
-        alimento.setCategoria(CategoriaSelect.valueOf(dto.getCategoria()));
-        alimento.setEstado(EstadoSelect.valueOf(dto.getEstado()));
         return alimento;
     }
 
     // Obtener alimentos con paginación
     @GetMapping
-    public ResponseEntity<Page<AlimentoDTO>> obtenerAlimentos(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<Alimento> alimentos = alimentoService.obtenerAlimentos(page, size);
-        Page<AlimentoDTO> alimentosDTO = alimentos.map(this::toDTO);
+    public ResponseEntity<List<AlimentoDTO>> obtenerAlimentos(@RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int size) {
+        List<AlimentoDTO> alimentosDTO = alimentoService.obtenerAlimentos(page, size)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(alimentosDTO);
     }
 
-    // Obtener un alimento específico por ID
+    // Obtener disponibilidad por ubicación
+    @GetMapping("/disponibilidad")
+    public ResponseEntity<Map<String, Long>> obtenerDisponibilidadPorUbicacion() {
+        Map<String, Long> disponibilidad = alimentoService.obtenerDisponibilidadPorUbicacion();
+        return ResponseEntity.ok(disponibilidad);
+    }
+
+    // Obtener alimentos próximos a caducar por ubicación
+    @GetMapping("/proximos-caducar")
+    public ResponseEntity<Map<String, List<AlimentoDTO>>> obtenerProximosACaducarPorUbicacion(
+            @RequestParam(defaultValue = "7") int diasAviso) {
+        LocalDate fechaAviso = LocalDate.now().plusDays(diasAviso);
+        Map<String, List<Alimento>> proximosACaducar = alimentoService.obtenerProximosACaducarPorUbicacion(fechaAviso);
+
+        // Convertir entidades a DTOs
+        Map<String, List<AlimentoDTO>> proximosACaducarDTO = proximosACaducar.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().stream().map(this::toDTO).collect(Collectors.toList())
+                ));
+
+        return ResponseEntity.ok(proximosACaducarDTO);
+    }
+
+    // Obtener alimentos más usados
+    @GetMapping("/mas-usados")
+    public ResponseEntity<List<AlimentoDTO>> obtenerAlimentosMasUsados(@RequestParam(defaultValue = "5") int topN) {
+        List<AlimentoDTO> alimentosMasUsados = alimentoService.controlarAlimentosMasUsados(topN)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(alimentosMasUsados);
+    }
+
+    // Obtener un alimento por ID
     @GetMapping("/{id}")
     public ResponseEntity<AlimentoDTO> obtenerAlimentoPorId(@PathVariable Long id) {
         return alimentoService.obtenerAlimentoPorId(id)
                 .map(alimento -> ResponseEntity.ok(toDTO(alimento)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // Crear un nuevo alimento
@@ -77,30 +109,18 @@ public class AlimentoController {
 
     // Actualizar un alimento por ID
     @PutMapping("/{id}")
-    public ResponseEntity<AlimentoDTO> actualizarAlimento(
-            @PathVariable Long id,
-            @RequestBody AlimentoDTO alimentoDTO) {
+    public ResponseEntity<AlimentoDTO> actualizarAlimento(@PathVariable Long id, @RequestBody AlimentoDTO alimentoDTO) {
         return alimentoService.actualizarAlimento(id, toEntity(alimentoDTO))
                 .map(alimento -> ResponseEntity.ok(toDTO(alimento)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // Eliminar un alimento por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarAlimento(@PathVariable Long id) {
-        return alimentoService.eliminarAlimento(id) ?
-                ResponseEntity.noContent().build() :
-                ResponseEntity.notFound().build();
-    }
-
-    // Obtener los alimentos más usados
-    @GetMapping("/mas-usados")
-    public ResponseEntity<List<AlimentoDTO>> controlarAlimentosMasUsados(
-            @RequestParam(defaultValue = "10") int topN) {
-        List<Alimento> alimentosMasUsados = alimentoService.controlarAlimentosMasUsados(topN);
-        List<AlimentoDTO> alimentosDTO = alimentosMasUsados.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(alimentosDTO);
+        if (alimentoService.eliminarAlimento(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

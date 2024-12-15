@@ -1,14 +1,18 @@
 package daw2a.gestionalimentos.services;
+
 import daw2a.gestionalimentos.entities.Alimento;
 import daw2a.gestionalimentos.enums.EstadoSelect;
 import daw2a.gestionalimentos.repositories.AlimentoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AlimentoService {
@@ -30,21 +34,22 @@ public class AlimentoService {
     }
 
     // Crear un nuevo alimento
+    @Transactional
     public Alimento crearAlimento(Alimento alimento) {
         return alimentoRepository.save(alimento);
     }
 
     // Actualizar un alimento por ID
+    @Transactional
     public Optional<Alimento> actualizarAlimento(Long id, Alimento alimentoActualizado) {
-        Optional<Alimento> alimentoExistente = alimentoRepository.findById(id);
-        if (alimentoExistente.isPresent()) {
+        return alimentoRepository.findById(id).map(alimentoExistente -> {
             alimentoActualizado.setId(id);
-            return Optional.of(alimentoRepository.save(alimentoActualizado));
-        }
-        return Optional.empty();
+            return alimentoRepository.save(alimentoActualizado);
+        });
     }
 
     // Eliminar un alimento por ID
+    @Transactional
     public boolean eliminarAlimento(Long id) {
         if (alimentoRepository.existsById(id)) {
             alimentoRepository.deleteById(id);
@@ -54,30 +59,52 @@ public class AlimentoService {
     }
 
     // Verificar y mover alimentos próximos a caducar al congelador
+    @Transactional
     public List<Alimento> moverAlimentosACongelador(LocalDate fechaLimite, EstadoSelect estado) {
-        // Lógica para mover los alimentos basándose en la fecha y el estado
         List<Alimento> alimentos = alimentoRepository.findByFechaCaducidadBeforeAndEstado(fechaLimite, estado);
-
-        // Actualizar el estado de los alimentos
-        alimentos.forEach(alimento -> alimento.setEstado(EstadoSelect.CONGELADO));
-
-        // Guardar los cambios
+        alimentos.forEach(alimento -> {
+            alimento.setEstado(EstadoSelect.CONGELADO);
+            alimento.getRecipiente().setId(1L); // Cambiar a congelador
+        });
         return alimentoRepository.saveAll(alimentos);
     }
 
-
     // Rotación de productos (FIFO)
+    @Transactional
     public void rotarProductos() {
         List<Alimento> alimentos = alimentoRepository.findAllByOrderByFechaCaducidadAsc();
-        for (Alimento alimento : alimentos) {
+        alimentos.forEach(alimento -> {
             if (alimento.getFechaCaducidad().isBefore(LocalDate.now())) {
                 alimentoRepository.delete(alimento); // Eliminar los alimentos caducados
             }
-        }
+        });
     }
 
-    // Controlar los alimentos más usados (puedes definir la lógica según el negocio)
+    // Alertas de alimentos próximos a caducar
+    public List<Alimento> alertasDeCaducidad(LocalDate fechaAviso) {
+        return alimentoRepository.findByFechaCaducidadBefore(fechaAviso);
+    }
+
+    // Controlar los alimentos más usados
     public List<Alimento> controlarAlimentosMasUsados(int topN) {
-        return alimentoRepository.findTopNByOrderByNumeroDeUsosDesc(PageRequest.of(0, topN));
+        return alimentoRepository.findTopNByOrderByNumeroDeUsosDesc(topN);
+    }
+
+    // Cantidad total y disponibilidad por ubicación
+    public Map<String, Long> obtenerDisponibilidadPorUbicacion() {
+        return alimentoRepository.countByUbicacion().stream()
+                .collect(Collectors.toMap(
+                        resultado -> (String) resultado[0],
+                        resultado -> (Long) resultado[1]
+                ));
+    }
+
+    // Resumen de alimentos próximos a caducar agrupados por ubicación
+    public Map<String, List<Alimento>> obtenerProximosACaducarPorUbicacion(LocalDate fecha) {
+        return alimentoRepository.findProximosACaducarAgrupadosPorUbicacion(fecha).stream()
+                .collect(Collectors.toMap(
+                        resultado -> (String) resultado[0],
+                        resultado -> (List<Alimento>) resultado[1]
+                ));
     }
 }
