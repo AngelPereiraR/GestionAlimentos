@@ -133,3 +133,13 @@ VALUES ('Pechuga de Pollo Congelada', true, false, 20, '2024-01-30', 7, 7, 1, 'C
        ('Pechuga de Pavo Congelada', true, false, 12, '2025-01-10', 4, 8, 2, 'CARNE_PESCADO', 'CONGELADO'),
        ('Patatas fritas congeladas', false, false, 30, '2025-04-15', 10, 9, 1, 'APERITIVOS', 'CONGELADO'),
        ('Verduras mixtas congeladas', true, true, 10, '2025-02-28', 6, 8, 2, 'VEGETAL', 'CONGELADO');
+
+-- Usuario "admin" con rol ADMIN
+-- Contraseña: password
+INSERT INTO usuario (nombre, email, password, rol)
+VALUES ('Administrador', 'admin@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRpXolM4OlY99X/0YlH9XXmrbqXwS', 'ADMIN');
+
+-- Usuario "usuario" con rol USUARIO
+-- Contraseña: password
+INSERT INTO usuario (nombre, email, password, rol)
+VALUES ('Juan Pérez', 'juan@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRpXolM4OlY99X/0YlH9XXmrbqXwS', 'USUARIO');

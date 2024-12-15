@@ -11,6 +11,9 @@ import daw2a.gestionalimentos.enums.CategoriaSelect;
 import daw2a.gestionalimentos.enums.EstadoSelect;
 import daw2a.gestionalimentos.services.AlmacenService;
 import daw2a.gestionalimentos.services.SeccionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -137,7 +140,11 @@ public class SeccionController {
         return recipiente;
     }
 
-    // Obtener todas las secciones
+    @Operation(summary = "Obtener todas las secciones", description = "Obtiene una lista de todas las secciones con paginación.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Secciones obtenidas correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error al obtener las secciones")
+    })
     @GetMapping
     public ResponseEntity<Page<SeccionDTO>> obtenerSecciones(@RequestParam int page, @RequestParam int pageSize) {
         Page<Seccion> secciones = seccionService.obtenerSecciones(page, pageSize);
@@ -145,7 +152,11 @@ public class SeccionController {
         return ResponseEntity.ok(seccionesDTO);
     }
 
-    // Obtener una sección específica por ID
+    @Operation(summary = "Obtener una sección específica por ID", description = "Obtiene una sección específica dado su ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sección encontrada"),
+            @ApiResponse(responseCode = "404", description = "Sección no encontrada")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<SeccionDTO> obtenerSeccionPorId(@PathVariable Long id) {
         Optional<Seccion> seccion = seccionService.obtenerSeccionPorId(id);
@@ -153,14 +164,22 @@ public class SeccionController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Crear una nueva sección
+    @Operation(summary = "Crear una nueva sección", description = "Crea una nueva sección y la guarda en la base de datos.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Sección creada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
     @PostMapping
     public ResponseEntity<SeccionDTO> crearSeccion(@RequestBody SeccionDTO seccionDTO) {
         Seccion nuevaSeccion = seccionService.crearSeccion(toEntity(seccionDTO));
         return ResponseEntity.ok(toDTO(nuevaSeccion));
     }
 
-    // Actualizar una sección por ID
+    @Operation(summary = "Actualizar una sección por ID", description = "Actualiza una sección existente por su ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sección actualizada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Sección no encontrada")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<SeccionDTO> actualizarSeccion(
             @PathVariable Long id,
@@ -170,7 +189,11 @@ public class SeccionController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Eliminar una sección por ID
+    @Operation(summary = "Eliminar una sección por ID", description = "Elimina una sección dada su ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Sección eliminada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Sección no encontrada")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarSeccion(@PathVariable Long id) {
         boolean eliminada = seccionService.eliminarSeccion(id);

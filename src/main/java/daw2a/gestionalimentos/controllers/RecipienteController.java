@@ -9,6 +9,9 @@ import daw2a.gestionalimentos.enums.CategoriaSelect;
 import daw2a.gestionalimentos.enums.EstadoSelect;
 import daw2a.gestionalimentos.services.RecipienteService;
 import daw2a.gestionalimentos.services.SeccionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +65,6 @@ public class RecipienteController {
 
         // Asignar la sección (puedes obtenerla desde un servicio si es necesario)
         if (dto.getIdSeccion() != null) {
-            // Obtén la entidad Seccion mediante su id
             Optional<Seccion> seccion = seccionService.obtenerSeccionPorId(dto.getIdSeccion());
             Seccion newSeccion = new Seccion();
             newSeccion.setId(seccion.get().getId());
@@ -95,8 +97,11 @@ public class RecipienteController {
         return recipiente;
     }
 
-
-    // Obtener todos los recipientes
+    @Operation(summary = "Obtener todos los recipientes", description = "Obtiene una lista de todos los recipientes con paginación.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Recipientes obtenidos correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error al obtener los recipientes")
+    })
     @GetMapping
     public ResponseEntity<Page<RecipienteDTO>> obtenerRecipientes(@RequestParam int page, @RequestParam int pageSize) {
         Page<Recipiente> recipientes = recipienteService.obtenerRecipientes(page, pageSize);
@@ -104,7 +109,11 @@ public class RecipienteController {
         return ResponseEntity.ok(recipientesDTO);
     }
 
-    // Obtener un recipiente específico por ID
+    @Operation(summary = "Obtener un recipiente específico por ID", description = "Obtiene un recipiente específico dado su ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Recipiente encontrado"),
+            @ApiResponse(responseCode = "404", description = "Recipiente no encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<RecipienteDTO> obtenerRecipientePorId(@PathVariable Long id) {
         Optional<Recipiente> recipiente = recipienteService.obtenerRecipientePorId(id);
@@ -112,14 +121,22 @@ public class RecipienteController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Crear un nuevo recipiente
+    @Operation(summary = "Crear un nuevo recipiente", description = "Crea un nuevo recipiente y lo guarda en la base de datos.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Recipiente creado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
     @PostMapping
     public ResponseEntity<RecipienteDTO> crearRecipiente(@RequestBody RecipienteDTO recipienteDTO) {
         Recipiente nuevoRecipiente = recipienteService.crearRecipiente(toEntity(recipienteDTO));
         return ResponseEntity.ok(toDTO(nuevoRecipiente));
     }
 
-    // Actualizar un recipiente por ID
+    @Operation(summary = "Actualizar un recipiente por ID", description = "Actualiza un recipiente existente por su ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Recipiente actualizado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Recipiente no encontrado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<RecipienteDTO> actualizarRecipiente(
             @PathVariable Long id,
@@ -129,7 +146,11 @@ public class RecipienteController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Eliminar un recipiente por ID
+    @Operation(summary = "Eliminar un recipiente por ID", description = "Elimina un recipiente dado su ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Recipiente eliminado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Recipiente no encontrado")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarRecipiente(@PathVariable Long id) {
         boolean eliminado = recipienteService.eliminarRecipiente(id);

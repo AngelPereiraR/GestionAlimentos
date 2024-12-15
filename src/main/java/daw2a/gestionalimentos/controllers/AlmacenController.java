@@ -9,6 +9,10 @@ import daw2a.gestionalimentos.entities.Almacen;
 import daw2a.gestionalimentos.entities.Recipiente;
 import daw2a.gestionalimentos.entities.Seccion;
 import daw2a.gestionalimentos.repositories.AlmacenRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +54,7 @@ public class AlmacenController {
         dto.setListaRecipientes(seccion.getListaRecipientes() != null ? seccion.getListaRecipientes().stream().map(this::toDTO).collect(Collectors.toList()) : null);
         return dto;
     }
+
     private RecipienteDTO toDTO(Recipiente recipiente) {
         RecipienteDTO dto = new RecipienteDTO();
         dto.setId(recipiente.getId());
@@ -60,6 +65,7 @@ public class AlmacenController {
                 : null);
         return dto;
     }
+
     private AlimentoDTO toDTO(Alimento alimento) {
         AlimentoDTO dto = new AlimentoDTO();
         dto.setId(alimento.getId());
@@ -97,9 +103,14 @@ public class AlmacenController {
 
     // Obtener todos los almacenes con paginación
     @GetMapping
+    @Operation(summary = "Obtener todos los almacenes", description = "Devuelve una lista de todos los almacenes con paginación.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de almacenes obtenida exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
     public ResponseEntity<Page<AlmacenDTO>> obtenerAlmacenes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "Número de página", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Número de elementos por página", example = "10") @RequestParam(defaultValue = "10") int size) {
         Page<Almacen> almacenes = almacenRepository.findAll(PageRequest.of(page, size));
         Page<AlmacenDTO> almacenesDTO = almacenes.map(this::toDTO);
         return ResponseEntity.ok(almacenesDTO);
@@ -107,7 +118,13 @@ public class AlmacenController {
 
     // Obtener un almacén por ID
     @GetMapping("/{id}")
-    public ResponseEntity<AlmacenDTO> obtenerAlmacenPorId(@PathVariable Long id) {
+    @Operation(summary = "Obtener un almacén por ID", description = "Devuelve un almacén específico mediante su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Almacén encontrado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Almacén no encontrado")
+    })
+    public ResponseEntity<AlmacenDTO> obtenerAlmacenPorId(
+            @Parameter(description = "ID del almacén", required = true) @PathVariable Long id) {
         Optional<Almacen> almacen = almacenRepository.findById(id);
         return almacen.map(value -> ResponseEntity.ok(toDTO(value)))
                 .orElse(ResponseEntity.notFound().build());
@@ -115,14 +132,27 @@ public class AlmacenController {
 
     // Crear un nuevo almacén
     @PostMapping
-    public ResponseEntity<AlmacenDTO> guardarAlmacen(@RequestBody AlmacenDTO almacenDTO) {
+    @Operation(summary = "Crear un nuevo almacén", description = "Crea un nuevo almacén y lo guarda en la base de datos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Almacén creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
+    public ResponseEntity<AlmacenDTO> guardarAlmacen(
+            @Parameter(description = "Objeto AlmacenDTO con la información del nuevo almacén", required = true) @RequestBody AlmacenDTO almacenDTO) {
         Almacen nuevoAlmacen = almacenRepository.save(toEntity(almacenDTO));
         return ResponseEntity.status(201).body(toDTO(nuevoAlmacen));
     }
 
     // Actualizar un almacén por ID
     @PutMapping("/{id}")
-    public ResponseEntity<AlmacenDTO> actualizarAlmacen(@PathVariable Long id, @RequestBody AlmacenDTO almacenDTO) {
+    @Operation(summary = "Actualizar un almacén", description = "Actualiza un almacén existente por su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Almacén actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Almacén no encontrado")
+    })
+    public ResponseEntity<AlmacenDTO> actualizarAlmacen(
+            @Parameter(description = "ID del almacén", required = true) @PathVariable Long id,
+            @Parameter(description = "Objeto AlmacenDTO con la nueva información del almacén", required = true) @RequestBody AlmacenDTO almacenDTO) {
         Optional<Almacen> almacenExistente = almacenRepository.findById(id);
         if (almacenExistente.isPresent()) {
             Almacen almacenActualizado = toEntity(almacenDTO);
@@ -135,7 +165,13 @@ public class AlmacenController {
 
     // Eliminar un almacén por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarAlmacen(@PathVariable Long id) {
+    @Operation(summary = "Eliminar un almacén", description = "Elimina un almacén de la base de datos mediante su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Almacén eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Almacén no encontrado")
+    })
+    public ResponseEntity<Void> eliminarAlmacen(
+            @Parameter(description = "ID del almacén", required = true) @PathVariable Long id) {
         if (almacenRepository.existsById(id)) {
             almacenRepository.deleteById(id);
             return ResponseEntity.noContent().build();
